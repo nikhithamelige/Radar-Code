@@ -12,6 +12,36 @@ byteBufferLength = 0
 
 
 # ------------------------------------------------------------------
+def apply_2d_cfar(signal, guard_band_width, kernel_size, threshold_factor):
+    num_rows, num_cols = signal.shape
+    thresholded_signal = np.zeros((num_rows, num_cols))
+    for i in range(guard_band_width, num_rows - guard_band_width):
+        for j in range(guard_band_width, num_cols - guard_band_width):
+            # Estimate the noise level
+            noise_level = np.mean(np.concatenate((
+                signal[i - guard_band_width:i + guard_band_width, j - guard_band_width:j + guard_band_width].ravel(),
+                signal[i - kernel_size:i + kernel_size, j - kernel_size:j + kernel_size].ravel())))
+            # Calculate the threshold for detection
+            threshold = threshold_factor * noise_level
+            # Check if the signal exceeds the threshold
+            if signal[i, j] > threshold:
+                thresholded_signal[i, j] = 1
+    return thresholded_signal
+
+
+def print_generator(range_arr, doppler_array, range_doppler):
+    # 2D CFAR parameters
+    guard_band_width = 1
+    kernel_size = 3
+    threshold_factor = 1.0
+    detected_objects = apply_2d_cfar(range_doppler, guard_band_width, kernel_size, threshold_factor)
+    print(detected_objects)
+    plt.clf()
+    cs = plt.contourf(detected_objects)
+    fig.colorbar(cs, shrink=0.9)
+    fig.canvas.draw()
+    plt.pause(0.1)
+
 
 # Function to configure the serial ports and send the data from
 # the configuration file to the radar
@@ -42,6 +72,7 @@ def serialConfig(configFileName):
 
 # Function to parse the data inside the configuration file
 def parseConfigFile(configFileName):
+    global chirpEndIdx, chirpStartIdx, numLoops, numTxAnt, digOutSampleRate, numAdcSamples, freqSlopeConst, numAdcSamplesRoundTo2, startFreq, idleTime, rampEndTime
     configParameters = {}  # Initialize an empty dictionary to store the configuration parameters
 
     # Read the configuration file and send it to the board
@@ -83,11 +114,11 @@ def parseConfigFile(configFileName):
     configParameters["numDopplerBins"] = numChirpsPerFrame / numTxAnt
     configParameters["numRangeBins"] = numAdcSamplesRoundTo2
     configParameters["rangeResolutionMeters"] = (3e8 * digOutSampleRate * 1e3) / (
-                2 * freqSlopeConst * 1e12 * numAdcSamples)
+            2 * freqSlopeConst * 1e12 * numAdcSamples)
     configParameters["rangeIdxToMeters"] = (3e8 * digOutSampleRate * 1e3) / (
-                2 * freqSlopeConst * 1e12 * configParameters["numRangeBins"])
+            2 * freqSlopeConst * 1e12 * configParameters["numRangeBins"])
     configParameters["dopplerResolutionMps"] = 3e8 / (
-                2 * startFreq * 1e9 * (idleTime + rampEndTime) * 1e-6 * configParameters["numDopplerBins"] * numTxAnt)
+            2 * startFreq * 1e9 * (idleTime + rampEndTime) * 1e-6 * configParameters["numDopplerBins"] * numTxAnt)
     configParameters["maxRange"] = (300 * 0.9 * digOutSampleRate) / (2 * freqSlopeConst * 1e3)
     configParameters["maxVelocity"] = 3e8 / (4 * startFreq * 1e9 * (idleTime + rampEndTime) * 1e-6 * numTxAnt)
 
@@ -166,7 +197,7 @@ def readAndParseData16xx(Dataport, configParameters):
 
     # If magicOK is equal to 1 then process the message
     if magicOK:
-        # word array to convert 4 bytes to a 32 bit number
+        # word array to convert 4 bytes to a 32-bit number
         word = [1, 2 ** 8, 2 ** 16, 2 ** 24]
 
         # Initialize the pointer index
@@ -195,7 +226,7 @@ def readAndParseData16xx(Dataport, configParameters):
         # Read the TLV messages
         for tlvIdx in range(numTLVs):
 
-            # word array to convert 4 bytes to a 32 bit number
+            # word array to convert 4 bytes to a 32-bit number
             word = [1, 2 ** 8, 2 ** 16, 2 ** 24]
 
             # Check the header of the TLV message
@@ -210,7 +241,7 @@ def readAndParseData16xx(Dataport, configParameters):
             # Read the data depending on the TLV message
             if tlv_type == MMWDEMO_UART_MSG_DETECTED_POINTS:
 
-                # word array to convert 4 bytes to a 16 bit number
+                # word array to convert 4 bytes to a 16-bit number
                 word = [1, 2 ** 8]
                 tlv_numObj = np.matmul(byteBuffer[idX:idX + 2], word)
                 idX += 2
@@ -243,7 +274,7 @@ def readAndParseData16xx(Dataport, configParameters):
                 # Make the necessary corrections and calculate the rest of the data
                 rangeVal = rangeIdx * configParameters["rangeIdxToMeters"]
                 dopplerIdx[dopplerIdx > (configParameters["numDopplerBins"] / 2 - 1)] = dopplerIdx[dopplerIdx > (
-                            configParameters["numDopplerBins"] / 2 - 1)] - 65535
+                        configParameters["numDopplerBins"] / 2 - 1)] - 65535
                 dopplerVal = dopplerIdx * configParameters["dopplerResolutionMps"]
                 # x[x > 32767] = x[x > 32767] - 65536
                 # y[y > 32767] = y[y > 32767] - 65536
@@ -253,7 +284,7 @@ def readAndParseData16xx(Dataport, configParameters):
                 z = z / tlv_xyzQFormat
 
                 # Store the data in the detObj dictionary
-                detObj = {"numObj": tlv_numObj, "rangeIdx": rangeIdx, "range": rangeVal, "dopplerIdx": dopplerIdx, \
+                detObj = {"numObj": tlv_numObj, "rangeIdx": rangeIdx, "range": rangeVal, "dopplerIdx": dopplerIdx,
                           "doppler": dopplerVal, "peakVal": peakVal, "x": x, "y": y, "z": z}
 
                 dataOK = 1
@@ -273,7 +304,8 @@ def readAndParseData16xx(Dataport, configParameters):
                     continue
 
                 # Convert the range doppler array to a matrix
-                rangeDoppler = np.reshape(rangeDoppler, (int(configParameters["numDopplerBins"]), int(configParameters["numRangeBins"])),
+                rangeDoppler = np.reshape(rangeDoppler, (
+                    int(configParameters["numDopplerBins"]), int(configParameters["numRangeBins"])),
                                           'F')  # Fortran-like reshape
                 rangeDoppler = np.append(rangeDoppler[int(len(rangeDoppler) / 2):],
                                          rangeDoppler[:int(len(rangeDoppler) / 2)], axis=0)
@@ -283,12 +315,7 @@ def readAndParseData16xx(Dataport, configParameters):
                 dopplerArray = np.multiply(
                     np.arange(-configParameters["numDopplerBins"] / 2, configParameters["numDopplerBins"] / 2),
                     configParameters["dopplerResolutionMps"])
-                print(rangeArray.shape)
-                plt.clf()
-                cs = plt.contourf(rangeArray, dopplerArray, rangeDoppler)
-                fig.colorbar(cs, shrink=0.9)
-                fig.canvas.draw()
-                plt.pause(0.1)
+                print_generator(rangeArray, dopplerArray, rangeDoppler)
 
         # Remove already processed data
         if 0 < idX < byteBufferLength:
@@ -336,8 +363,3 @@ while True:
         CLIport.close()
         Dataport.close()
         break
-
-
-
-
-
