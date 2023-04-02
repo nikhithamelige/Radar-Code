@@ -9,23 +9,17 @@ range_doppler_features = np.load("data/range_doppler_data.npz", allow_pickle=Tru
 
 x_data, y_data = range_doppler_features['out_x'], range_doppler_features['out_y']
 
-
 classes_values = ["empty_room", "occupied_room"]
 classes = len(classes_values)
 
 y_data = tf.keras.utils.to_categorical(y_data - 1, classes)
 
-train_ratio = 0.70
-validation_ratio = 0.20
-test_ratio = 0.10
+train_ratio = 0.90
 
-x_train, x_test, y_train, y_test = train_test_split(x_data, y_data, test_size=1 - train_ratio)
-x_val, x_test, y_val, y_test = train_test_split(x_test, y_test, test_size=test_ratio/(test_ratio + validation_ratio))
+x_train, x_val, y_train, y_val = train_test_split(x_data, y_data, test_size=1 - train_ratio)
 
 train_dataset = tf.data.Dataset.from_tensor_slices((x_train, y_train))
 validation_dataset = tf.data.Dataset.from_tensor_slices((x_val, y_val))
-test_dataset = tf.data.Dataset.from_tensor_slices((x_test, y_test))
-
 
 model = tf.keras.Sequential([
     tf.keras.layers.Conv2D(32, (2, 2), activation='relu', input_shape=(16, 128, 1)),
@@ -41,16 +35,16 @@ model = tf.keras.Sequential([
     tf.keras.layers.Dense(classes, activation='softmax')
 ])
 
-model.summary()
+# model.summary()
 model.compile(loss=tf.keras.losses.CategoricalCrossentropy(),
-              optimizer=tf.keras.optimizers.Adam(learning_rate=0.00001), metrics=['acc'])
+              optimizer=tf.keras.optimizers.Adam(learning_rate=0.0001), metrics=['acc'])
 
 # this controls the batch size
-BATCH_SIZE = 20
+BATCH_SIZE = 60
 train_dataset = train_dataset.batch(BATCH_SIZE, drop_remainder=False)
 validation_dataset = validation_dataset.batch(BATCH_SIZE, drop_remainder=False)
 
-history = model.fit(train_dataset, epochs=150, validation_data=validation_dataset)
+history = model.fit(train_dataset, epochs=100, validation_data=validation_dataset)
 
 # model.save(f"saved-model/range-doppler-model")
 
@@ -61,7 +55,6 @@ val_loss = history.history['val_loss']
 
 print(f"Training Accuracy: {round(np.average(acc), 3)}")
 print(f"Validation Accuracy: {round(np.average(val_acc), 3)}")
-
 
 epochs = range(1, len(acc) + 1)
 fig, axs = plt.subplots(2, 1)
