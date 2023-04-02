@@ -19,9 +19,17 @@ dopplerArray = np.multiply(np.arange(-configParameters["numDopplerBins"] / 2, co
                            configParameters["dopplerResolutionMps"])
 
 
+def matrix_norm(data_mat):
+    # calculate mag
+    row_sums = data_mat.sum(axis=1)
+    # gen normalised matrix
+    new_matrix = data_mat / row_sums[:, np.newaxis]
+    return new_matrix
+
+
 def calculate_range_doppler_heatmap(payload, config):
     # Convert levels to dBm
-    payload = 10 * np.log10(payload)
+    payload = 20 * np.log10(payload)
     # Clac. range Doppler array
     rangeDoppler = np.reshape(payload, (config["numDopplerBins"], config["numRangeBins"]), 'F')
     rangeDoppler = np.append(rangeDoppler[int(len(rangeDoppler) / 2):], rangeDoppler[:int(len(rangeDoppler) / 2)],
@@ -55,11 +63,11 @@ fig = plt.figure()
 for i in df.columns:
     doppler_data = df[i].to_numpy()
     range_doppler = calculate_range_doppler_heatmap(doppler_data, configParameters)
-    detected_objects = apply_2d_cfar(range_doppler, guard_band_width, kernel_size, threshold_factor)
+    range_doppler = matrix_norm(range_doppler)
+    # detected_objects = apply_2d_cfar(range_doppler, guard_band_width, kernel_size, threshold_factor)
 
     plt.clf()
     cs = plt.contourf(rangeArray, dopplerArray, range_doppler)
     fig.colorbar(cs, shrink=0.9)
     fig.canvas.draw()
     plt.pause(0.1)
-
