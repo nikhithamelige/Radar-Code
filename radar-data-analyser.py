@@ -2,9 +2,9 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 
-# range_data_path = "data/empty_room_t.csv" #empty
+range_data_path = "data/empty_room/empty_room_t.csv"  # empty
 
-range_data_path = "data/occupied_room_t.csv"  # occupied
+# range_data_path = "data/occupied_room/occupied_room_t.csv"  # occupied
 
 df = pd.read_csv(range_data_path, index_col=False)
 
