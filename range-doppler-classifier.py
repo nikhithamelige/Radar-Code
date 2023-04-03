@@ -1,6 +1,7 @@
 import numpy as np
 import tensorflow as tf
 from sklearn.model_selection import train_test_split
+from sklearn.metrics import confusion_matrix
 import matplotlib.pyplot as plt
 
 np.set_printoptions(threshold=np.inf)
@@ -44,20 +45,23 @@ model.compile(loss=tf.keras.losses.CategoricalCrossentropy(),
               optimizer=tf.keras.optimizers.Adam(learning_rate=0.001), metrics=['acc'])
 
 # this controls the batch size
-BATCH_SIZE = 65
+BATCH_SIZE = 70
 train_dataset = train_dataset.batch(BATCH_SIZE, drop_remainder=False)
 validation_dataset = validation_dataset.batch(BATCH_SIZE, drop_remainder=False)
 
 history = model.fit(train_dataset, epochs=60, validation_data=validation_dataset)
 
-# model.save(f"saved-model/range-doppler-model")
+model.save(f"saved-model/range-doppler-model")
 
 predicted_labels = model.predict(x_test)
 actual_labels = y_test
 
-for pos, data in enumerate(predicted_labels):
-    print(f"{classes_values[np.argmax(data)]} in predicted class, actual is {classes_values[np.argmax(actual_labels[pos])]}")
+label_predicted = np.argmax(predicted_labels, axis=1)
+label_actual = np.argmax(actual_labels, axis=1)
 
+results = confusion_matrix(label_actual, label_predicted)
+
+print(results)
 
 acc = history.history['acc']
 val_acc = history.history['val_acc']
