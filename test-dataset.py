@@ -10,13 +10,12 @@ x_data, y_data = frange_doppler_features['out_x'], frange_doppler_features['out_
 
 fig = plt.figure()
 
-n = 0
-for i in x_data[np.where(y_data == 1)]:
+
+for count, frame in enumerate(x_data[np.where(y_data == 1)]):
     plt.clf()
-    plt.title(f"Frame {n}")
-    cs = plt.contourf(i)
+    plt.title(f"Frame {count} for no moving target/empty area")
+    cs = plt.contourf(frame)
     fig.colorbar(cs, shrink=0.9)
     fig.canvas.draw()
-    n = n + 1
     plt.pause(0.1)
 

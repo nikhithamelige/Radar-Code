@@ -2,9 +2,9 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 
-range_data_path = "data/empty_room/empty_room_t.csv"  # empty
+# range_data_path = "data/empty_room/empty_room_t.csv"  # empty
 
-# range_data_path = "data/occupied_room/occupied_room_t.csv"  # occupied
+range_data_path = "data/occupied_room/occupied_room_t.csv"  # occupied
 
 df = pd.read_csv(range_data_path, index_col=False)
 
@@ -60,14 +60,17 @@ threshold_factor = 1
 
 fig = plt.figure()
 
-for i in df.columns:
-    doppler_data = df[i].to_numpy()
+for count, frame in enumerate(df.columns):
+    doppler_data = df[frame].to_numpy()
     range_doppler = calculate_range_doppler_heatmap(doppler_data, configParameters)
-    range_doppler = matrix_norm(range_doppler)
+    # range_doppler = matrix_norm(range_doppler)
     # detected_objects = apply_2d_cfar(range_doppler, guard_band_width, kernel_size, threshold_factor)
 
     plt.clf()
+    plt.title(f"Frame {frame} for moving target")
     cs = plt.contourf(rangeArray, dopplerArray, range_doppler)
     fig.colorbar(cs, shrink=0.9)
     fig.canvas.draw()
     plt.pause(0.1)
+
+

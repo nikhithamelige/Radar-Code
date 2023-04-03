@@ -33,9 +33,9 @@ def calc_range_doppler(data_frame, packet_id, config):
     rangeDoppler = np.append(rangeDoppler[int(len(rangeDoppler) / 2):], rangeDoppler[:int(len(rangeDoppler) / 2)],
                              axis=0)
     # calculate mag
-    row_sums = rangeDoppler.sum(axis=1)
+    # row_sums = rangeDoppler.sum(axis=1)
     # gen normalised matrix
-    rangeDoppler = rangeDoppler / row_sums[:, np.newaxis]
+    # rangeDoppler = rangeDoppler / row_sums[:, np.newaxis]
 
     return rangeDoppler
 
