@@ -24,6 +24,23 @@ for index, target in enumerate(all_targets):
     y.append(np.ones(len(filenames[index])) * index)
 
 
+def apply_2d_cfar(signal, guard_band_width, kernel_size, threshold_factor):
+    num_rows, num_cols = signal.shape
+    thresholded_signal = np.zeros((num_rows, num_cols))
+    for i in range(guard_band_width, num_rows - guard_band_width):
+        for j in range(guard_band_width, num_cols - guard_band_width):
+            # Estimate the noise level
+            noise_level = np.mean(np.concatenate((
+                signal[i - guard_band_width:i + guard_band_width, j - guard_band_width:j + guard_band_width].ravel(),
+                signal[i - kernel_size:i + kernel_size, j - kernel_size:j + kernel_size].ravel())))
+            # Calculate the threshold for detection
+            threshold = threshold_factor * noise_level
+            # Check if the signal exceeds the threshold
+            if signal[i, j] > threshold:
+                thresholded_signal[i, j] = 1
+    return thresholded_signal
+
+
 def calc_range_doppler(data_frame, packet_id, config):
     payload = data_frame[packet_id].to_numpy()
     # Convert levels to dBm
@@ -40,8 +57,9 @@ def calc_range_doppler(data_frame, packet_id, config):
     return rangeDoppler
 
 
-out_x_rcs = []
-out_y_rcs = []
+out_x_range_doppler = []
+out_x_range_doppler_cfar = []
+out_y_range_doppler = []
 
 for folder in range(len(all_targets)):
     all_files = join(dataset_path, all_targets[folder])
@@ -54,10 +72,14 @@ for folder in range(len(all_targets)):
 
         for col in df_data.columns:
             data = calc_range_doppler(df_data, col, configParameters)
-            out_x_rcs.append(data)
-            out_y_rcs.append(folder + 1)
+            cfar_data = apply_2d_cfar(data, guard_band_width=3, kernel_size=3, threshold_factor=1)
+            out_x_range_doppler.append(data)
+            out_x_range_doppler_cfar.append(cfar_data)
+            out_y_range_doppler.append(folder + 1)
 
-data_range_x = np.array(out_x_rcs)
-data_range_y = np.array(out_y_rcs)
+data_range_x = np.array(out_x_range_doppler)
+data_range_cfar_x = np.array(out_x_range_doppler_cfar)
+data_range_y = np.array(out_y_range_doppler)
 
 np.savez('data/range_doppler_data.npz', out_x=data_range_x, out_y=data_range_y)
+np.savez('data/range_doppler_cfar_data.npz', out_x=data_range_cfar_x, out_y=data_range_y)
