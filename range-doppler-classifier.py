@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 
 np.set_printoptions(threshold=np.inf)
 
-range_doppler_features = np.load("data/range_doppler_data.npz", allow_pickle=True)
+range_doppler_features = np.load("data/range_doppler_cfar_data.npz", allow_pickle=True)
 
 x_data, y_data = range_doppler_features['out_x'], range_doppler_features['out_y']
 
@@ -14,12 +14,16 @@ classes = len(classes_values)
 
 y_data = tf.keras.utils.to_categorical(y_data - 1, classes)
 
-train_ratio = 0.90
+train_ratio = 0.80
+validation_ratio = 0.10
+test_ratio = 0.10
 
-x_train, x_val, y_train, y_val = train_test_split(x_data, y_data, test_size=1 - train_ratio)
+x_train, x_test, y_train, y_test = train_test_split(x_data, y_data, test_size=1 - train_ratio)
+x_val, x_test, y_val, y_test = train_test_split(x_test, y_test, test_size=test_ratio/(test_ratio + validation_ratio))
 
 train_dataset = tf.data.Dataset.from_tensor_slices((x_train, y_train))
 validation_dataset = tf.data.Dataset.from_tensor_slices((x_val, y_val))
+test_dataset = tf.data.Dataset.from_tensor_slices((x_test, y_test))
 
 model = tf.keras.Sequential([
     tf.keras.layers.Conv2D(32, (2, 2), activation='relu', input_shape=(16, 128, 1)),
@@ -37,16 +41,23 @@ model = tf.keras.Sequential([
 
 # model.summary()
 model.compile(loss=tf.keras.losses.CategoricalCrossentropy(),
-              optimizer=tf.keras.optimizers.Adam(learning_rate=0.0001), metrics=['acc'])
+              optimizer=tf.keras.optimizers.Adam(learning_rate=0.001), metrics=['acc'])
 
 # this controls the batch size
-BATCH_SIZE = 60
+BATCH_SIZE = 65
 train_dataset = train_dataset.batch(BATCH_SIZE, drop_remainder=False)
 validation_dataset = validation_dataset.batch(BATCH_SIZE, drop_remainder=False)
 
-history = model.fit(train_dataset, epochs=100, validation_data=validation_dataset)
+history = model.fit(train_dataset, epochs=60, validation_data=validation_dataset)
 
 # model.save(f"saved-model/range-doppler-model")
+
+predicted_labels = model.predict(x_test)
+actual_labels = y_test
+
+for pos, data in enumerate(predicted_labels):
+    print(f"{classes_values[np.argmax(data)]} in predicted class, actual is {classes_values[np.argmax(actual_labels[pos])]}")
+
 
 acc = history.history['acc']
 val_acc = history.history['val_acc']
