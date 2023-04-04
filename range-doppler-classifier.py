@@ -3,6 +3,7 @@ import tensorflow as tf
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import confusion_matrix
 import matplotlib.pyplot as plt
+import seaborn as sns
 
 np.set_printoptions(threshold=np.inf)
 
@@ -10,7 +11,7 @@ range_doppler_features = np.load("data/range_doppler_cfar_data.npz", allow_pickl
 
 x_data, y_data = range_doppler_features['out_x'], range_doppler_features['out_y']
 
-classes_values = ["empty_room", "occupied_room"]
+classes_values = ["occupied_room", "empty_room"]
 classes = len(classes_values)
 
 y_data = tf.keras.utils.to_categorical(y_data - 1, classes)
@@ -45,7 +46,7 @@ model.compile(loss=tf.keras.losses.CategoricalCrossentropy(),
               optimizer=tf.keras.optimizers.Adam(learning_rate=0.001), metrics=['acc'])
 
 # this controls the batch size
-BATCH_SIZE = 65
+BATCH_SIZE = 70
 train_dataset = train_dataset.batch(BATCH_SIZE, drop_remainder=False)
 validation_dataset = validation_dataset.batch(BATCH_SIZE, drop_remainder=False)
 
@@ -60,8 +61,6 @@ label_predicted = np.argmax(predicted_labels, axis=1)
 label_actual = np.argmax(actual_labels, axis=1)
 
 results = confusion_matrix(label_actual, label_predicted)
-
-print(results)
 
 acc = history.history['acc']
 val_acc = history.history['val_acc']
@@ -88,4 +87,15 @@ axs[1].set_xlabel('Epoch')
 axs[1].set_ylabel('Accuracy')
 axs[1].grid(True)
 axs[1].legend(loc='best')
+plt.show()
+
+ax = plt.subplot()
+sns.heatmap(results, annot=True, annot_kws={"size": 20}, ax=ax, fmt='g')
+
+# labels, title and ticks
+ax.set_xlabel('Predicted labels', fontsize=12)
+ax.set_ylabel('True labels', fontsize=12)
+ax.set_title(f'Confusion Matrix for RADAR data with model accuracy {round(np.average(acc), 3)}')
+ax.xaxis.set_ticklabels(classes_values, fontsize=15)
+ax.yaxis.set_ticklabels(classes_values, fontsize=15)
 plt.show()
