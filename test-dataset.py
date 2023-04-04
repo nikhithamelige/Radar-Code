@@ -21,7 +21,7 @@ dopplerArray = np.multiply(np.arange(-configParameters["numDopplerBins"] / 2, co
 
 fig = plt.figure()
 
-test = moving
+test = moving # change this for testing
 
 for count, frame in enumerate(x_data[np.where(y_data == test)]):
     plt.clf()

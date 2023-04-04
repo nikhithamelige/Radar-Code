@@ -2,9 +2,8 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 
-range_data_path, test = "data/empty_room/empty_room_t.csv", 2  # empty
-
-# range_data_path, test = "data/occupied_room/occupied_room_t.csv", 1  # occupied
+range_data_path, test = "data/occupied_room/occupied_room_t.csv", 1  # occupied
+# range_data_path, test = "data/empty_room/empty_room_t.csv", 2  # empty
 
 df = pd.read_csv(range_data_path, index_col=False)
 
@@ -52,12 +51,10 @@ threshold_factor = 1
 
 fig = plt.figure()
 
-
 for count, frame in enumerate(df.columns):
     doppler_data = df[frame].to_numpy()
     range_doppler = calculate_range_doppler_heatmap(doppler_data, configParameters)
-    # detected_objects = apply_2d_cfar(range_doppler, guard_band_width, kernel_size, threshold_factor)
-
+    # range_doppler = apply_2d_cfar(range_doppler, guard_band_width, kernel_size, threshold_factor)
     plt.clf()
     if test - 1:
         plt.title(f"Frame {count} for no moving target/empty area")
