@@ -21,7 +21,7 @@ dopplerArray = np.multiply(np.arange(-configParameters["numDopplerBins"] / 2, co
 def calculate_range_doppler_heatmap(payload, config):
     # Convert levels to dBm
     payload = 20 * np.log10(payload)
-    # Clac. range Doppler array
+    # Calc. range Doppler array
     rangeDoppler = np.reshape(payload, (config["numDopplerBins"], config["numRangeBins"]), 'F')
     rangeDoppler = np.append(rangeDoppler[int(len(rangeDoppler) / 2):], rangeDoppler[:int(len(rangeDoppler) / 2)],
                              axis=0)
