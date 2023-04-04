@@ -36,7 +36,7 @@ model = tf.keras.Sequential([
 
     tf.keras.layers.Flatten(),
     tf.keras.layers.Dense(64, activation='relu'),
-    tf.keras.layers.Dropout(0.2),
+    tf.keras.layers.Dropout(0.25),
     tf.keras.layers.Dense(classes, activation='softmax')
 ])
 
@@ -45,7 +45,7 @@ model.compile(loss=tf.keras.losses.CategoricalCrossentropy(),
               optimizer=tf.keras.optimizers.Adam(learning_rate=0.001), metrics=['acc'])
 
 # this controls the batch size
-BATCH_SIZE = 70
+BATCH_SIZE = 65
 train_dataset = train_dataset.batch(BATCH_SIZE, drop_remainder=False)
 validation_dataset = validation_dataset.batch(BATCH_SIZE, drop_remainder=False)
 

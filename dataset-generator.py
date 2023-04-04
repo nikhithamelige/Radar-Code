@@ -6,6 +6,7 @@ from os.path import isdir, join
 
 dataset_path = 'data'
 
+
 # Config parameters for test
 configParameters = {'numDopplerBins': 16, 'numRangeBins': 128, 'rangeResolutionMeters': 0.04360212053571429,
                     'rangeIdxToMeters': 0.04360212053571429, 'dopplerResolutionMps': 0.12518841691334906,
@@ -49,10 +50,6 @@ def calc_range_doppler(data_frame, packet_id, config):
     rangeDoppler = np.reshape(payload, (config["numDopplerBins"], config["numRangeBins"]), 'F')
     rangeDoppler = np.append(rangeDoppler[int(len(rangeDoppler) / 2):], rangeDoppler[:int(len(rangeDoppler) / 2)],
                              axis=0)
-    # calculate mag
-    # row_sums = rangeDoppler.sum(axis=1)
-    # gen normalised matrix
-    # rangeDoppler = rangeDoppler / row_sums[:, np.newaxis]
 
     return rangeDoppler
 
