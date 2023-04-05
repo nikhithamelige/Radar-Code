@@ -14,13 +14,17 @@ input_details = interpreter.get_input_details()[0]
 output_details = interpreter.get_output_details()[0]
 
 input_index = input_details["index"]
+classes_values = ["occupied_room", "empty_room"]
 
-data = x_data[2]
-print(data.shape)
-in_tensor = np.float32(data.reshape(1, data.shape[0], data.shape[1], 1))
+# bad testing on training data
+for i, true_label in enumerate(y_data):
+    data = x_data[i]
+    in_tensor = np.float32(data.reshape(1, data.shape[0], data.shape[1], 1))
 
-interpreter.set_tensor(input_index, in_tensor)
-interpreter.invoke()
-classes = interpreter.get_tensor(output_details['index'])
+    interpreter.set_tensor(input_index, in_tensor)
+    interpreter.invoke()
+    classes = interpreter.get_tensor(output_details['index'])[0]
 
-print(classes)
+    pred = np.argmax(classes)
+
+    print(classes_values[pred], classes_values[true_label-1])
