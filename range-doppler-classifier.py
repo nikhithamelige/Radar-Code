@@ -22,13 +22,14 @@ test_ratio = 0.10
 
 x_train, x_test, y_train, y_test = train_test_split(x_data, y_data, test_size=1 - train_ratio)
 x_val, x_test, y_val, y_test = train_test_split(x_test, y_test, test_size=test_ratio/(test_ratio + validation_ratio))
+x_train = tf.expand_dims(x_train, axis=-1)
 
 train_dataset = tf.data.Dataset.from_tensor_slices((x_train, y_train))
 validation_dataset = tf.data.Dataset.from_tensor_slices((x_val, y_val))
 test_dataset = tf.data.Dataset.from_tensor_slices((x_test, y_test))
 
 model = tf.keras.Sequential([
-    tf.keras.layers.Conv2D(32, (2, 2), activation='relu', input_shape=(16, 128, 1)),
+    tf.keras.layers.Conv2D(32, (2, 2), activation='relu', input_shape=x_train.shape[1:]),
     tf.keras.layers.MaxPooling2D(2, 2),
     tf.keras.layers.Conv2D(32, (2, 2), activation='relu'),
     tf.keras.layers.MaxPooling2D(2, 2),
