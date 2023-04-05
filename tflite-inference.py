@@ -1,5 +1,6 @@
 import numpy as np
 import tensorflow as tf
+import time
 
 type_of_quantization = "Default"
 model_path = f"saved-tflite-model/range-doppler-{type_of_quantization}.tflite"
@@ -20,11 +21,13 @@ classes_values = ["occupied_room", "empty_room"]
 for i, true_label in enumerate(y_data):
     data = x_data[i]
     in_tensor = np.float32(data.reshape(1, data.shape[0], data.shape[1], 1))
-
+    start_time = time.time()
     interpreter.set_tensor(input_index, in_tensor)
     interpreter.invoke()
     classes = interpreter.get_tensor(output_details['index'])[0]
+    end_time = time.time()
+    elapsed_time = (end_time - start_time)* 1000.0
 
     pred = np.argmax(classes)
-
+    print(f"Inference time: {elapsed_time} ms")
     print(classes_values[pred], classes_values[true_label-1])
