@@ -4,7 +4,7 @@ import numpy as np
 from os import listdir
 from os.path import isdir, join
 
-dataset_path = 'data'
+dataset_path = 'data/csv_files'
 
 
 # Config parameters for test
@@ -78,5 +78,5 @@ data_range_x = np.array(out_x_range_doppler)
 data_range_cfar_x = np.array(out_x_range_doppler_cfar)
 data_range_y = np.array(out_y_range_doppler)
 
-np.savez('data/range_doppler_data.npz', out_x=data_range_x, out_y=data_range_y)
-np.savez('data/range_doppler_cfar_data.npz', out_x=data_range_cfar_x, out_y=data_range_y)
+np.savez('data/npz_files/range_doppler_data.npz', out_x=data_range_x, out_y=data_range_y)
+np.savez('data/npz_files/range_doppler_cfar_data.npz', out_x=data_range_cfar_x, out_y=data_range_y)

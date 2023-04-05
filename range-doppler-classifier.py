@@ -7,7 +7,7 @@ import seaborn as sns
 
 np.set_printoptions(threshold=np.inf)
 
-range_doppler_features = np.load("data/range_doppler_cfar_data.npz", allow_pickle=True)
+range_doppler_features = np.load("data/npz_files/range_doppler_cfar_data.npz", allow_pickle=True)
 
 x_data, y_data = range_doppler_features['out_x'], range_doppler_features['out_y']
 
