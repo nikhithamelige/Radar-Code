@@ -2,7 +2,7 @@ import numpy as np
 import tensorflow as tf
 import time
 
-type_of_quantization = "Default"
+type_of_quantization = "default"
 model_path = f"saved-tflite-model/range-doppler-{type_of_quantization}.tflite"
 
 range_doppler_features = np.load("data/npz_files/range_doppler_cfar_data.npz", allow_pickle=True)
