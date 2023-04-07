@@ -2,7 +2,7 @@ import numpy as np
 import tensorflow as tf
 import time
 
-type_of_quantization = "default"
+type_of_quantization = "float16"
 model_path = f"saved-tflite-model/range-doppler-{type_of_quantization}.tflite"
 
 range_doppler_features = np.load("data/npz_files/range_doppler_cfar_data.npz", allow_pickle=True)
@@ -26,7 +26,7 @@ for i, true_label in enumerate(y_data):
     interpreter.invoke()
     classes = interpreter.get_tensor(output_details['index'])[0]
     end_time = time.time()
-    elapsed_time = (end_time - start_time)* 1000.0
+    elapsed_time = (end_time - start_time) * 1000.0
 
     pred = np.argmax(classes)
     print(f"Inference time: {elapsed_time} ms")

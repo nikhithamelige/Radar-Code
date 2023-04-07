@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 moving = 1
 no_moving = 2
 
-frange_doppler_features = np.load("data/npz_files/range_doppler_data.npz", allow_pickle=True)
+frange_doppler_features = np.load("data/npz_files/range_doppler_cfar_data.npz", allow_pickle=True)
 
 x_data, y_data = frange_doppler_features['out_x'], frange_doppler_features['out_y']
 # Config parameters for test
@@ -19,15 +19,20 @@ dopplerArray = np.multiply(np.arange(-configParameters["numDopplerBins"] / 2, co
 
 fig = plt.figure()
 
-test = moving  # change this for testing
+test = no_moving  # change this for testing
 
 for count, frame in enumerate(x_data[np.where(y_data == test)]):
     plt.clf()
+    plt.xlabel("Range (m)")
+    plt.ylabel("Doppler velocity (m/s)")
     if test - 1:
         plt.title(f"Frame {count} for no moving target/empty area")
     else:
         plt.title(f"Frame {count} for moving target")
     cs = plt.contourf(rangeArray, dopplerArray, frame)
+    print(rangeArray.shape)
+    print(dopplerArray.shape)
+    print(frame.shape)
     fig.colorbar(cs, shrink=0.9)
     fig.canvas.draw()
     plt.pause(0.1)

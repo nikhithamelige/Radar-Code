@@ -1,11 +1,12 @@
 import numpy as np
 import tensorflow as tf
+from keras.utils.vis_utils import plot_model
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import confusion_matrix
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-np.set_printoptions(threshold=np.inf)
+# np.set_printoptions(threshold=np.inf)
 
 range_doppler_features = np.load("data/npz_files/range_doppler_cfar_data.npz", allow_pickle=True)
 
@@ -45,7 +46,7 @@ model = tf.keras.Sequential([
 # model.summary()
 model.compile(loss=tf.keras.losses.CategoricalCrossentropy(),
               optimizer=tf.keras.optimizers.Adam(learning_rate=0.001), metrics=['acc'])
-
+plot_model(model, to_file='model_plot.png', show_shapes=True, show_layer_names=True)
 # this controls the batch size
 BATCH_SIZE = 70
 train_dataset = train_dataset.batch(BATCH_SIZE, drop_remainder=False)

@@ -51,12 +51,12 @@ def serialConfig(configFileName):
     # Open the serial ports for the configuration and the data ports
 
     # Raspberry pi / Ubuntu
-    CLIport = serial.Serial('/dev/ttyACM0', 115200)
-    Dataport = serial.Serial('/dev/ttyACM1', 852272)
+    # CLIport = serial.Serial('/dev/ttyACM0', 115200)
+    # Dataport = serial.Serial('/dev/ttyACM1', 852272)
 
     # Windows
-    #CLIport = serial.Serial('COM6', 115200)
-    #Dataport = serial.Serial('COM7', 852272)
+    CLIport = serial.Serial('COM6', 115200)
+    Dataport = serial.Serial('COM7', 852272)
 
     # Read the configuration file and send it to the board
     config = [line.rstrip('\r\n') for line in open(configFileName)]
@@ -313,7 +313,7 @@ def readAndParseData16xx(Dataport, configParameters):
                 dopplerArray = np.multiply(
                     np.arange(-configParameters["numDopplerBins"] / 2, configParameters["numDopplerBins"] / 2),
                     configParameters["dopplerResolutionMps"])
-                print(rangeArray.shape)
+                # print(rangeArray.shape)
                 plt.clf()
                 cs = plt.contourf(rangeArray[:128], dopplerArray, 20*np.log10(rangeDoppler[:, :128]))
                 fig.colorbar(cs, shrink=0.9)

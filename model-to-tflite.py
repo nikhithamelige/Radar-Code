@@ -2,7 +2,7 @@ import tensorflow as tf
 import numpy as np
 
 
-type_of_quantization = "default"
+type_of_quantization = "float16"
 saved_model_dir = "saved-model/range-doppler-model"
 BATCH_SIZE = 65
 
@@ -12,7 +12,7 @@ x_data, y_data = range_doppler_features['out_x'], range_doppler_features['out_y'
 
 
 def representative_dataset():
-    range_doppler = tf.data.Dataset.from_tensor_slices(x_data).batch(1)
+    range_doppler = tf.data.Dataset.from_tensor_slices(np.expand_dims(x_data.astype(np.float32), axis=-1)).batch(1)
     for i in range_doppler.take(BATCH_SIZE):
         yield [i]
 
