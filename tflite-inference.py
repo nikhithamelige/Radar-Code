@@ -17,6 +17,7 @@ output_details = interpreter.get_output_details()[0]
 input_index = input_details["index"]
 classes_values = ["occupied_room", "empty_room"]
 
+print(f"Model type {type_of_quantization}")
 # bad testing on training data
 for i, true_label in enumerate(y_data):
     data = x_data[i]

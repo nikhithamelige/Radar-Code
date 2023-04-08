@@ -184,7 +184,7 @@ def readAndParseData16xx(Dataport, configParameters):
             if byteBufferLength < 0:
                 byteBufferLength = 0
 
-            # word array to convert 4 bytes to a 32 bit number
+            # word array to convert 4 bytes to a 32-bit number
             word = [1, 2 ** 8, 2 ** 16, 2 ** 24]
 
             # Read the total packet length
@@ -240,7 +240,7 @@ def readAndParseData16xx(Dataport, configParameters):
             # Read the data depending on the TLV message
             if tlv_type == MMWDEMO_UART_MSG_DETECTED_POINTS:
 
-                # word array to convert 4 bytes to a 16 bit number
+                # word array to convert 4 bytes to a 16-bit number
                 word = [1, 2 ** 8]
                 tlv_numObj = np.matmul(byteBuffer[idX:idX + 2], word)
                 idX += 2
