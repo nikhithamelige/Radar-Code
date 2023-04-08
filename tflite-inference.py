@@ -21,7 +21,9 @@ print(f"Model type {type_of_quantization}")
 # bad testing on training data
 for i, true_label in enumerate(y_data):
     data = x_data[i]
+
     in_tensor = np.float32(data.reshape(1, data.shape[0], data.shape[1], 1))
+    print(in_tensor.shape)
     start_time = time.time()
     interpreter.set_tensor(input_index, in_tensor)
     interpreter.invoke()

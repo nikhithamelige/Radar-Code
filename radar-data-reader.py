@@ -283,7 +283,7 @@ def readAndParseData16xx(Dataport, configParameters):
                 z = z / tlv_xyzQFormat
 
                 # Store the data in the detObj dictionary
-                detObj = {"numObj": tlv_numObj, "rangeIdx": rangeIdx, "range": rangeVal, "dopplerIdx": dopplerIdx, \
+                detObj = {"numObj": tlv_numObj, "rangeIdx": rangeIdx, "range": rangeVal, "dopplerIdx": dopplerIdx,
                           "doppler": dopplerVal, "peakVal": peakVal, "x": x, "y": y, "z": z}
 
                 dataOK = 1
