@@ -313,12 +313,8 @@ def readAndParseData16xx(Dataport, configParameters):
                 dopplerArray = np.multiply(
                     np.arange(-configParameters["numDopplerBins"] / 2, configParameters["numDopplerBins"] / 2),
                     configParameters["dopplerResolutionMps"])
-                # print(rangeArray.shape)
-                plt.clf()
-                cs = plt.contourf(rangeArray[:128], dopplerArray, 20*np.log10(rangeDoppler[:, :128]))
-                fig.colorbar(cs, shrink=0.9)
-                fig.canvas.draw()
-                plt.pause(0.1)
+
+                print_generator(rangeArray, dopplerArray, rangeDoppler)
 
         # Remove already processed data
         if 0 < idX < byteBufferLength:
