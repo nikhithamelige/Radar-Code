@@ -218,7 +218,7 @@ def readAndParseData16xx(Dataport, configParameters):
 
     # If magicOK is equal to 1 then process the message
     if magicOK:
-        # word array to convert 4 bytes to a 32 bit number
+        # word array to convert 4 bytes to a 32-bit number
         word = [1, 2 ** 8, 2 ** 16, 2 ** 24]
 
         # Initialize the pointer index
@@ -247,7 +247,7 @@ def readAndParseData16xx(Dataport, configParameters):
         # Read the TLV messages
         for tlvIdx in range(numTLVs):
 
-            # word array to convert 4 bytes to a 32 bit number
+            # word array to convert 4 bytes to a 32-bit number
             word = [1, 2 ** 8, 2 ** 16, 2 ** 24]
 
             # Check the header of the TLV message
@@ -323,7 +323,7 @@ def readAndParseData16xx(Dataport, configParameters):
 
                 # Convert the range doppler array to a matrix
                 rangeDoppler = np.reshape(rangeDoppler, (
-                int(configParameters["numDopplerBins"]), int(configParameters["numRangeBins"])),
+                    int(configParameters["numDopplerBins"]), int(configParameters["numRangeBins"])),
                                           'F')  # Fortran-like reshape
                 rangeDoppler = np.append(rangeDoppler[int(len(rangeDoppler) / 2):],
                                          rangeDoppler[:int(len(rangeDoppler) / 2)], axis=0)

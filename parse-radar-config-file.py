@@ -1,4 +1,8 @@
+import numpy as np
+
+
 def parseConfigFile(configFileName):
+    global chirpEndIdx, chirpStartIdx, numLoops, numAdcSamplesRoundTo2, digOutSampleRate, numAdcSamples, freqSlopeConst, startFreq, idleTime, rampEndTime, numTxAnt
     configParameters = {}  # Initialize an empty dictionary to store the configuration parameters
 
     # Read the configuration file and send it to the board
@@ -52,5 +56,6 @@ def parseConfigFile(configFileName):
 
 
 d = parseConfigFile("AWR294X_profile_2023_03_24T13_43_52_777.cfg")
+
 
 print(d)
