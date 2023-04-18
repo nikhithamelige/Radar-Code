@@ -5,8 +5,8 @@ import tensorflow as tf
 import matplotlib.pyplot as plt
 
 # TO DO: Add your own config file and model path
-configFileName = 'AWR294X_profile_2023_03_24T13_43_52_777.cfg'
-model_path = f"saved-tflite-model/range-doppler-float16.tflite"
+configFileName = '../../Data/04-04-23 outdoor/man/12 feet bush, man behind lateral/xwr16xx_profile_2023_04_04T15_27_13_437.cfg'
+model_path = f"saved-tflite-model/04-04-23-outdoor-rangedoppler-cfar-float16.tflite"
 
 debug = False  # prints Range-Doppler data when enabled
 
